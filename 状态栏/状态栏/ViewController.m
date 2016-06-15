@@ -40,9 +40,14 @@
     cell.textLabel.text=@"hello";
     return cell;
 }
--(void)clickAction
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [StatusBarMessage show:@"下载成功"];
+}
+-(void)clickAction
+{
+    
+//    StatusBarMessage *bar = [StatusBarMessage sharedInstance];
 }
 
 - (void)didReceiveMemoryWarning {

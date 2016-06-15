@@ -9,8 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 @interface StatusBarMessage : NSObject
++(id)sharedInstance;
 +(void)show:(NSString*)message;
 +(void)show:(NSString *)message textColor:(UIColor*)color;
 +(void)show:(NSString *)message textColor:(UIColor *)color backColor:(UIColor*)backColor;
-
++(void)show:(NSString *)message textColor:(UIColor *)color backColor:(UIColor*)backColor WithImage:(UIImage*)image;
 @end
