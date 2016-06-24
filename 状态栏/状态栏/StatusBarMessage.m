@@ -36,6 +36,7 @@
 @end
 
 @implementation StatusBarMessage
+//
 +(void)show:(NSString*)message
 {
     
@@ -57,6 +58,7 @@
     [[StatusBarMessage sharedInstance] show:message textColor:color backColor:backColor WithImage:image];
 }
 
+//将显示数据封装成模型 添加到显示数组中
 -(void)show:(NSString*)message textColor:(UIColor*)color backColor:(UIColor*)backColor WithImage:(UIImage*)image
 {
     showMessageModel *model = [showMessageModel new];
@@ -64,17 +66,26 @@
     model.alertImage = image;
     model.messageColor = color;
     model.backgroundColor = backColor;
+//  加到显示数组中
     [showQueue addObject:model];
-    if (showQueue.count == 1) {
+    if (showQueue.count == 1)//当如果数组中的数目为一个时候就直接显示出来
+    {
         [[StatusBarMessage sharedInstance] showAlert];
     }
 }
-
+//遍历显示数组中的显示模型
+-(void)showAlert
+{
+    if (showQueue.count>0) {
+//       将模型中的view显示出来
+        [[StatusBarMessage sharedInstance] show:showQueue[0]];
+    }
+}
+//显示提示框
 -(void)show:(showMessageModel*)messageModel
 {
     BOOL hasImage = NO;
     [_window.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-//    [[[UIApplication sharedApplication].windows lastObject] addSubview:_window];
     _window.hidden = NO;
     _window.alpha = 1;
     _window.backgroundColor = messageModel.backgroundColor;
@@ -94,6 +105,8 @@
     CGFloat messageLabelY = 0.5*(StautusBarHeight-height);
     
     messageLabel.frame = CGRectMake(messageLabelX, messageLabelY, messageLabelWidth, height);
+    messageLabel.text = messageModel.message;
+    messageLabel.backgroundColor = [UIColor greenColor];
     [_window addSubview:messageLabel];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -111,20 +124,7 @@
     
 }
 
-//  根据label的宽度和文字的长度 获取 label的高度
--(CGFloat)getLabelHeightWithMessage:(NSString*)message WithFont:(CGFloat)font WithWidth:(CGFloat)width
-{
-     CGRect frame = [message boundingRectWithSize:CGSizeMake(width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:font]} context:nil];
-    return frame.size.height;
-}
-
--(void)showAlert
-{
-    if (showQueue.count>0) {
-        [[StatusBarMessage sharedInstance] show:showQueue[0]];
-    }
-}
-
+#pragma mark - 初始化
 +(id)sharedInstance
 {
     static StatusBarMessage* _t=nil;
@@ -139,7 +139,7 @@
     self=[super init];
     if (self) {
         CGRect frame=[[UIScreen mainScreen] bounds];
-        frame.size.height=50;
+        frame.size.height = StautusBarHeight;
         _window=[[UIWindow alloc] initWithFrame:frame];
         _window.backgroundColor=[UIColor redColor];
         [_window makeKeyAndVisible];
@@ -150,6 +150,14 @@
         imageView = [[UIImageView alloc] init];
     }
     return self;
+}
+
+#pragma mark - 工具方法
+//  根据label的宽度和文字的长度 获取 label的高度
+-(CGFloat)getLabelHeightWithMessage:(NSString*)message WithFont:(CGFloat)font WithWidth:(CGFloat)width
+{
+    CGRect frame = [message boundingRectWithSize:CGSizeMake(width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:font]} context:nil];
+    return frame.size.height;
 }
 
 @end
